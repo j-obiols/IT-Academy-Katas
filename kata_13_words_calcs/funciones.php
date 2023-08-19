@@ -1,29 +1,34 @@
 <?php
     
-    //This is the develop branch
-    
-    function analisisTexto($texto){
-
-        if(is_string($texto)){ 
+    function prepararTexto(string $texto):string {
   
-            //Eliminamos puntos, comas, puntos y comas, acentos, etc y substituimos los puntos suspensivos por puntos:
+        //Esta función elimina puntos, comas, puntos y comas, acentos, etc y substituye los puntos suspensivos por puntos:
            
             $cambios = array("," => "", ";" => "",  "-"=>"", "..."=>".", ":"=>"", "¨"=>"", "'"=>" ","("=>"", ")"=>"", "["=>"", "]"=>"","!"=>"", "?"=>"","¿"=>"", "ñ"=>"n", "á"=> "a", "é"=> "e", "è"=> "e", "í"=> "i", "ï"=> "i", "ó"=> "o", "ò"=> "o","ú"=> "u", "ü"=> "u",
             "Ñ"=>"N", "Á"=> "A", "É"=> "E", "È"=> "E", "Í"=> "I", "Ï"=> "I", "Ó"=> "O", "Ò"=> "O","Ú"=> "U", "Ü"=> "U");
             
-            $textoMod = strtr($texto, $cambios);
+            $textoSimplificado = strtr($texto, $cambios);
 
-            //Contamos puntos para identificar oraciones:
+        return $textoSimplificado;
 
-            $numeroDeOraciones = substr_count($textoMod, ".");
+    }
 
-            //Si es un texto pero no hay ningún punto, consideraremos que contiene una oración:
+
+    function analisisTexto(string $texto):string {
+
+        if(is_string($texto)){ 
+
+            $textoSimplificado = prepararTexto($texto);
+
+            $numeroDeOraciones = substr_count($textoSimplificado, ".");
 
             if($numeroDeOraciones == 0){
+
                 $numeroDeOraciones = 1; 
+
             }
 
-            $arrayPalabras = str_word_count($textoMod,1);
+            $arrayPalabras = str_word_count($textoSimplificado,1);
 
             $numeroDePalabras = count($arrayPalabras);
             
@@ -31,20 +36,22 @@
 
                 $maximaLongitud = strlen($arrayPalabras[0]);
 
-                $suma = 0;
+                $sumaCaracteres = 0;
 
                 foreach($arrayPalabras as $key=>$palabra) {
                 
-                    $suma = $suma + strlen($palabra);
+                    $sumaCaracteres = $sumaCaracteres + strlen($palabra);
 
                     if(strlen($palabra) >=  $maximaLongitud) {
-                        $maximaLongitud = strlen($arrayPalabras[$key]);
-                        $palabraMasLarga = $arrayPalabras[$key];
+
+                        $maximaLongitud = strlen($palabra);
+                        $palabraMasLarga = $palabra;
+
                     } 
                     
                 }
 
-                $longitudMediana = intval($suma / $numeroDePalabras);
+                $longitudMediana = intval($sumaCaracteres / $numeroDePalabras);
 
             } else {
 
@@ -61,4 +68,5 @@
             return "No es un texto.";
         } 
     }
+
 ?>
